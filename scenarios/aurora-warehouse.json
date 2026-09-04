@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/scenario.schema.json",
+  "id": "aurora-warehouse",
+  "name": "Aurora Warehouse",
+  "description": "Three autonomous carriers negotiate dense racks and moving pallet carts.",
+  "seed": 2049,
+  "width": 960,
+  "height": 600,
+  "gridSize": 24,
+  "durationSeconds": 45,
+  "lidar": {
+    "rays": 72,
+    "maxRange": 170,
+    "noiseStdDev": 0.7
+  },
+  "robots": [
+    {
+      "id": "nova-01",
+      "start": { "x": 72, "y": 96 },
+      "goal": { "x": 888, "y": 504 },
+      "radius": 13,
+      "maxSpeed": 74,
+      "color": "#72f1ff"
+    }
+  ],
+  "obstacles": [
+    {
+      "id": "rack-a",
+      "x": 220,
+      "y": 66,
+      "width": 126,
+      "height": 160,
+      "kind": "rack"
+    },
+    {
+      "id": "pallet-cart-a",
+      "x": 365,
+      "y": 270,
+      "width": 34,
+      "height": 34,
+      "kind": "dynamic",
+      "motion": { "velocity": { "x": 0, "y": 42 } }
+    }
+  ]
+}

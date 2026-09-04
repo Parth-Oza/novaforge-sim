@@ -1,0 +1,113 @@
+import type { Scenario } from "./types";
+
+export const scenarios: Scenario[] = [
+  {
+    id: "aurora-warehouse",
+    name: "Aurora Warehouse",
+    description: "Three autonomous carriers negotiate dense racks and moving pallet carts.",
+    seed: 2049,
+    width: 960,
+    height: 600,
+    gridSize: 24,
+    durationSeconds: 45,
+    lidar: { rays: 72, maxRange: 170, noiseStdDev: 0.7 },
+    robots: [
+      {
+        id: "nova-01",
+        start: { x: 72, y: 96 },
+        goal: { x: 888, y: 504 },
+        radius: 13,
+        maxSpeed: 74,
+        color: "#72f1ff",
+      },
+      {
+        id: "nova-02",
+        start: { x: 72, y: 504 },
+        goal: { x: 888, y: 96 },
+        radius: 13,
+        maxSpeed: 68,
+        color: "#b782ff",
+      },
+      {
+        id: "nova-03",
+        start: { x: 888, y: 300 },
+        goal: { x: 72, y: 300 },
+        radius: 13,
+        maxSpeed: 64,
+        color: "#9dff8a",
+      },
+    ],
+    obstacles: [
+      { id: "rack-a", x: 220, y: 66, width: 126, height: 160, kind: "rack" },
+      { id: "rack-b", x: 220, y: 374, width: 126, height: 160, kind: "rack" },
+      { id: "rack-c", x: 432, y: 156, width: 108, height: 288, kind: "rack" },
+      { id: "rack-d", x: 650, y: 66, width: 126, height: 160, kind: "rack" },
+      { id: "rack-e", x: 650, y: 374, width: 126, height: 160, kind: "rack" },
+      {
+        id: "pallet-cart-a",
+        x: 365,
+        y: 270,
+        width: 34,
+        height: 34,
+        kind: "dynamic",
+        motion: { velocity: { x: 0, y: 42 } },
+      },
+      {
+        id: "pallet-cart-b",
+        x: 575,
+        y: 292,
+        width: 38,
+        height: 30,
+        kind: "dynamic",
+        motion: { velocity: { x: 0, y: -36 } },
+      },
+    ],
+  },
+  {
+    id: "selene-yard",
+    name: "Selene Research Yard",
+    description: "Exploration rovers traverse a sparse lunar analog with drifting survey drones.",
+    seed: 4093,
+    width: 960,
+    height: 600,
+    gridSize: 24,
+    durationSeconds: 50,
+    lidar: { rays: 96, maxRange: 205, noiseStdDev: 1.2 },
+    robots: [
+      {
+        id: "selene-a",
+        start: { x: 80, y: 460 },
+        goal: { x: 880, y: 112 },
+        radius: 15,
+        maxSpeed: 60,
+        color: "#ffcb6b",
+      },
+      {
+        id: "selene-b",
+        start: { x: 110, y: 120 },
+        goal: { x: 830, y: 500 },
+        radius: 15,
+        maxSpeed: 56,
+        color: "#72f1ff",
+      },
+    ],
+    obstacles: [
+      { id: "crater-a", x: 246, y: 132, width: 132, height: 96, kind: "rock" },
+      { id: "crater-b", x: 440, y: 340, width: 158, height: 114, kind: "rock" },
+      { id: "ridge", x: 628, y: 126, width: 92, height: 194, kind: "rock" },
+      { id: "boulder-a", x: 304, y: 394, width: 58, height: 68, kind: "rock" },
+      {
+        id: "survey-drone",
+        x: 460,
+        y: 86,
+        width: 32,
+        height: 32,
+        kind: "dynamic",
+        motion: { velocity: { x: 58, y: 0 } },
+      },
+    ],
+  },
+];
+
+export const getScenario = (id: string): Scenario =>
+  scenarios.find((scenario) => scenario.id === id) ?? scenarios[0];
