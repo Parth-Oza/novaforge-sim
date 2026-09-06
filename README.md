@@ -9,6 +9,8 @@
   [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-9dff8a.svg)](CONTRIBUTING.md)
 </div>
 
+![NovaForge Sim digital-twin warehouse with three autonomous robots](public/og.png)
+
 ## Why NovaForge exists
 
 High-fidelity simulators are powerful, but many autonomy changes first need a fast answer to a smaller question: **does this planner, sensor assumption, or fleet behavior remain correct across repeatable edge cases?**
@@ -26,6 +28,7 @@ This first release is an intentionally focused MVP. It does **not** claim to rep
 - 2D LiDAR ray casting with configurable noise and range
 - Two interactive digital-twin scenarios
 - Headless batch execution for CI and regression metrics
+- Declarative acceptance gates with explainable pass/fail evidence
 - JSON Schema for community-authored scenarios
 - Responsive, accessible browser interface with no backend
 - Unit tests for planning, sensing, and deterministic replay
@@ -109,12 +112,23 @@ Start from [`scenarios/aurora-warehouse.json`](scenarios/aurora-warehouse.json).
   "gridSize": 24,
   "durationSeconds": 30,
   "lidar": { "rays": 72, "maxRange": 180, "noiseStdDev": 0.5 },
+  "acceptance": {
+    "minCompletionPercent": 95,
+    "minArrivalPercent": 100,
+    "maxSafetyHolds": 120,
+    "maxReplans": 150
+  },
   "robots": [],
   "obstacles": []
 }
 ```
 
 The current UI scenarios are defined in `src/sim/scenarios.ts`. Loading arbitrary JSON from the interface is a planned contributor task.
+
+Acceptance gates make the expected behavior reviewable with the scenario itself. The browser
+shows each live check, while `pnpm batch` applies the same evaluator to every deterministic run
+and reports the exact checks that failed. See the
+[acceptance-gate guide](docs/ACCEPTANCE_GATES.md) for the metric definitions and CI behavior.
 
 ## Where this can go
 

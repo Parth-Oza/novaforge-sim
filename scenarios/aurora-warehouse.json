@@ -13,6 +13,12 @@
     "maxRange": 170,
     "noiseStdDev": 0.7
   },
+  "acceptance": {
+    "minCompletionPercent": 100,
+    "minArrivalPercent": 100,
+    "maxSafetyHolds": 100,
+    "maxReplans": 120
+  },
   "robots": [
     {
       "id": "nova-01",

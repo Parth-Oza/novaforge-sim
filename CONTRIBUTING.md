@@ -44,6 +44,7 @@ A good scenario explains the behavior it is intended to test. Include:
 - Start and goal positions that do not intersect obstacles
 - A short description of the risk or behavior being tested
 - Expected completion or safety metrics
+- Explicit `acceptance` thresholds that describe a passing run
 - At least one deterministic batch run in the pull-request description
 
 Validate the file against `schema/scenario.schema.json` before submission.

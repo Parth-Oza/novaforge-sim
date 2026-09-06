@@ -120,7 +120,7 @@ export default function App() {
 
       <footer>
         <p>Built for researchers, robotics engineers, and curious contributors.</p>
-        <span>NovaForge Sim · MIT licensed · v0.1.0</span>
+        <span>NovaForge Sim · MIT licensed · v0.2.0</span>
       </footer>
     </main>
   );

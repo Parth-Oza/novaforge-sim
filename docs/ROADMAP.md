@@ -16,7 +16,7 @@ The roadmap favors a trustworthy simulation core before high-fidelity presentati
 ## 0.2 Scenario laboratory
 
 - [ ] Import and export scenario JSON
-- [ ] Acceptance thresholds and pass/fail reports
+- [x] Acceptance thresholds and pass/fail reports
 - [ ] Replay timeline with pause, seek, and single-step controls
 - [ ] Collision, wait-time, and near-miss heatmaps
 - [ ] Property-based world generation

@@ -1,4 +1,5 @@
 import { castLidar } from "./lidar";
+import { evaluateScenario } from "./evaluation";
 import { circleIntersectsObstacle, distance, SeededRandom } from "./math";
 import { planPath } from "./planner";
 import type {
@@ -100,11 +101,14 @@ export class SimulationEngine {
         width: this.scenario.width,
         height: this.scenario.height,
         seed: this.scenario.seed,
+        durationSeconds: this.scenario.durationSeconds,
+        acceptance: structuredClone(this.scenario.acceptance),
       },
       robots: structuredClone(this.robots),
       obstacles: structuredClone(this.obstacles),
       lidar: structuredClone(this.lidar),
       metrics,
+      evaluation: evaluateScenario(metrics, this.scenario.acceptance),
     };
   }
 

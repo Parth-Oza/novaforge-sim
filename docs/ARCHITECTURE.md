@@ -28,7 +28,15 @@ React components consume snapshots. `SimulatorCanvas` renders the digital-twin v
 
 ### Batch runner
 
-`src/cli/batch.ts` runs repeated seeded scenarios without a browser. This is the foundation for regression thresholds, Monte Carlo sweeps, and distributed execution.
+`src/cli/batch.ts` runs repeated seeded scenarios without a browser. It applies the same
+acceptance evaluator as the interface and exits non-zero when any run fails, making scenario
+evidence directly usable in CI.
+
+### Acceptance evaluator
+
+`src/sim/evaluation.ts` compares simulation metrics with the thresholds stored in each scenario.
+It returns structured checks instead of a single opaque boolean, so the browser, batch reports,
+and future ROS 2 integrations can explain exactly why a run passed or failed.
 
 ## Determinism contract
 

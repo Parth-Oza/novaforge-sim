@@ -32,6 +32,13 @@ export type LidarConfig = {
   noiseStdDev: number;
 };
 
+export type AcceptanceCriteria = {
+  minCompletionPercent?: number;
+  minArrivalPercent?: number;
+  maxSafetyHolds?: number;
+  maxReplans?: number;
+};
+
 export type Scenario = {
   id: string;
   name: string;
@@ -42,6 +49,7 @@ export type Scenario = {
   gridSize: number;
   durationSeconds: number;
   lidar: LidarConfig;
+  acceptance: AcceptanceCriteria;
   robots: RobotConfig[];
   obstacles: Obstacle[];
 };
@@ -74,10 +82,36 @@ export type SimulationMetrics = {
   completionPercent: number;
 };
 
+export type AcceptanceCheck = {
+  id: keyof AcceptanceCriteria;
+  label: string;
+  actual: number;
+  threshold: number;
+  direction: "at-least" | "at-most";
+  unit: "percent" | "count";
+  passed: boolean;
+};
+
+export type ScenarioEvaluation = {
+  passed: boolean;
+  checks: AcceptanceCheck[];
+};
+
 export type SimulationSnapshot = {
-  scenario: Pick<Scenario, "id" | "name" | "description" | "width" | "height" | "seed">;
+  scenario: Pick<
+    Scenario,
+    | "id"
+    | "name"
+    | "description"
+    | "width"
+    | "height"
+    | "seed"
+    | "durationSeconds"
+    | "acceptance"
+  >;
   robots: RobotState[];
   obstacles: Obstacle[];
   lidar: Record<string, LidarHit[]>;
   metrics: SimulationMetrics;
+  evaluation: ScenarioEvaluation;
 };

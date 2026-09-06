@@ -11,6 +11,12 @@ export const scenarios: Scenario[] = [
     gridSize: 24,
     durationSeconds: 45,
     lidar: { rays: 72, maxRange: 170, noiseStdDev: 0.7 },
+    acceptance: {
+      minCompletionPercent: 100,
+      minArrivalPercent: 100,
+      maxSafetyHolds: 100,
+      maxReplans: 120,
+    },
     robots: [
       {
         id: "nova-01",
@@ -73,6 +79,12 @@ export const scenarios: Scenario[] = [
     gridSize: 24,
     durationSeconds: 50,
     lidar: { rays: 96, maxRange: 205, noiseStdDev: 1.2 },
+    acceptance: {
+      minCompletionPercent: 100,
+      minArrivalPercent: 100,
+      maxSafetyHolds: 90,
+      maxReplans: 75,
+    },
     robots: [
       {
         id: "selene-a",

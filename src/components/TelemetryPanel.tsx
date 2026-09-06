@@ -7,7 +7,9 @@ type TelemetryPanelProps = {
 const format = (value: number, digits = 0): string => value.toFixed(digits);
 
 export function TelemetryPanel({ snapshot }: TelemetryPanelProps) {
-  const { metrics } = snapshot;
+  const { metrics, evaluation } = snapshot;
+  const evaluationComplete = metrics.simTime >= snapshot.scenario.durationSeconds;
+  const verdict = evaluationComplete ? (evaluation.passed ? "Passed" : "Failed") : "Collecting";
   return (
     <aside className="telemetry panel">
       <div className="panel-heading">
@@ -58,6 +60,30 @@ export function TelemetryPanel({ snapshot }: TelemetryPanelProps) {
         <span>LiDAR frames</span>
         <strong>{metrics.sensorFrames.toLocaleString()}</strong>
       </div>
+
+      <section
+        className={`evidence-gate ${evaluationComplete ? (evaluation.passed ? "passed" : "failed") : "pending"}`}
+        aria-label={`Scenario evidence gate: ${verdict}`}
+      >
+        <div className="evidence-heading">
+          <span>Scenario evidence gate</span>
+          <strong>{verdict}</strong>
+        </div>
+        <div className="evidence-checks">
+          {evaluation.checks.map((check) => (
+            <div className="evidence-check" key={check.id}>
+              <i aria-hidden="true">{check.passed ? "✓" : "·"}</i>
+              <span>{check.label}</span>
+              <code>
+                {check.actual.toFixed(check.unit === "percent" ? 0 : 0)}
+                {check.unit === "percent" ? "%" : ""}
+                {check.direction === "at-least" ? " ≥ " : " ≤ "}
+                {check.threshold}{check.unit === "percent" ? "%" : ""}
+              </code>
+            </div>
+          ))}
+        </div>
+      </section>
     </aside>
   );
 }

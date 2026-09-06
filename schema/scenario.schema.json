@@ -14,6 +14,7 @@
     "gridSize",
     "durationSeconds",
     "lidar",
+    "acceptance",
     "robots",
     "obstacles"
   ],
@@ -35,6 +36,17 @@
         "rays": { "type": "integer", "minimum": 4, "maximum": 2048 },
         "maxRange": { "type": "number", "exclusiveMinimum": 0 },
         "noiseStdDev": { "type": "number", "minimum": 0 }
+      }
+    },
+    "acceptance": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "minCompletionPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+        "minArrivalPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+        "maxSafetyHolds": { "type": "integer", "minimum": 0 },
+        "maxReplans": { "type": "integer", "minimum": 0 }
       }
     },
     "robots": {

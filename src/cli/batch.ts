@@ -20,20 +20,24 @@ for (let run = 0; run < runs; run += 1) {
   const engine = new SimulationEngine(scenario);
   const steps = Math.ceil(scenario.durationSeconds / engine.fixedStep);
   for (let step = 0; step < steps; step += 1) engine.step();
-  const { metrics } = engine.snapshot();
+  const { metrics, evaluation } = engine.snapshot();
   results.push({
     run: run + 1,
     seed: scenario.seed,
     completionPercent: Number(metrics.completionPercent.toFixed(2)),
     arrived: `${metrics.arrived}/${metrics.totalRobots}`,
     safetyHolds: metrics.safetyHolds,
-    passed: metrics.arrived === metrics.totalRobots,
+    passed: evaluation.passed,
     replans: metrics.replans,
+    failedChecks: evaluation.checks
+      .filter((check) => !check.passed)
+      .map((check) => check.id),
   });
 }
 
 const summary = {
   scenario: template.id,
+  acceptance: template.acceptance,
   runs,
   passRate: `${Math.round(
     (results.filter((result) => result.passed).length / runs) * 100,
@@ -42,3 +46,7 @@ const summary = {
 };
 
 console.log(JSON.stringify(summary, null, 2));
+
+if (results.some((result) => !result.passed)) {
+  process.exitCode = 1;
+}
