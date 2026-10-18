@@ -32,6 +32,14 @@ export type LidarConfig = {
   noiseStdDev: number;
 };
 
+export type RadarConfig = {
+  maxRange: number;
+  fieldOfViewDegrees: number;
+  rangeNoiseStdDev: number;
+  bearingNoiseStdDev: number;
+  velocityNoiseStdDev: number;
+};
+
 export type AcceptanceCriteria = {
   minCompletionPercent?: number;
   minArrivalPercent?: number;
@@ -49,6 +57,7 @@ export type Scenario = {
   gridSize: number;
   durationSeconds: number;
   lidar: LidarConfig;
+  radar?: RadarConfig;
   acceptance: AcceptanceCriteria;
   robots: RobotConfig[];
   obstacles: Obstacle[];
@@ -58,6 +67,7 @@ export type RobotStatus = "planning" | "moving" | "waiting" | "arrived";
 
 export type RobotState = RobotConfig & {
   position: Vec2;
+  velocity: Vec2;
   heading: number;
   status: RobotStatus;
   path: Vec2[];
@@ -70,6 +80,13 @@ export type LidarHit = {
   angle: number;
   distance: number;
   point: Vec2;
+};
+
+export type RadarDetection = {
+  obstacleId: string;
+  range: number;
+  bearing: number;
+  relativeVelocity: Vec2;
 };
 
 export type SimulationMetrics = {
@@ -108,10 +125,12 @@ export type SimulationSnapshot = {
     | "seed"
     | "durationSeconds"
     | "acceptance"
+    | "radar"
   >;
   robots: RobotState[];
   obstacles: Obstacle[];
   lidar: Record<string, LidarHit[]>;
+  radar: Record<string, RadarDetection[]>;
   metrics: SimulationMetrics;
   evaluation: ScenarioEvaluation;
 };

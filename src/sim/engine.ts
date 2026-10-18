@@ -2,6 +2,7 @@ import { castLidar } from "./lidar";
 import { evaluateScenario } from "./evaluation";
 import { circleIntersectsObstacle, distance, SeededRandom } from "./math";
 import { planPath } from "./planner";
+import { scanRadar } from "./radar";
 import type {
   Obstacle,
   RobotState,
@@ -16,6 +17,7 @@ const cloneScenario = (scenario: Scenario): Scenario => structuredClone(scenario
 const createRobotState = (robot: Scenario["robots"][number]): RobotState => ({
   ...robot,
   position: { ...robot.start },
+  velocity: { x: 0, y: 0 },
   heading: Math.atan2(robot.goal.y - robot.start.y, robot.goal.x - robot.start.x),
   status: "planning",
   path: [],
@@ -36,6 +38,7 @@ export class SimulationEngine {
   private sensorFrames = 0;
   private replanAccumulator = 0;
   private lidar: SimulationSnapshot["lidar"] = {};
+  private radar: SimulationSnapshot["radar"] = {};
 
   constructor(scenario: Scenario) {
     this.scenario = cloneScenario(scenario);
@@ -56,6 +59,7 @@ export class SimulationEngine {
     this.sensorFrames = 0;
     this.replanAccumulator = 0;
     this.lidar = {};
+    this.radar = {};
     this.replanAll();
     this.scanAll();
   }
@@ -103,10 +107,12 @@ export class SimulationEngine {
         seed: this.scenario.seed,
         durationSeconds: this.scenario.durationSeconds,
         acceptance: structuredClone(this.scenario.acceptance),
+        radar: structuredClone(this.scenario.radar),
       },
       robots: structuredClone(this.robots),
       obstacles: structuredClone(this.obstacles),
       lidar: structuredClone(this.lidar),
+      radar: structuredClone(this.radar),
       metrics,
       evaluation: evaluateScenario(metrics, this.scenario.acceptance),
     };
@@ -152,25 +158,42 @@ export class SimulationEngine {
         this.random,
       );
       this.sensorFrames += 1;
+      if (this.scenario.radar) {
+        this.radar[robot.id] = scanRadar(
+          robot,
+          this.obstacles,
+          this.scenario.radar,
+          this.random,
+        );
+        this.sensorFrames += 1;
+      } else {
+        this.radar[robot.id] = [];
+      }
     }
   }
 
   private updateRobot(robot: RobotState, dt: number): void {
-    if (robot.status === "arrived") return;
+    if (robot.status === "arrived") {
+      robot.velocity = { x: 0, y: 0 };
+      return;
+    }
     if (distance(robot.position, robot.goal) <= robot.radius + 5) {
       robot.position = { ...robot.goal };
+      robot.velocity = { x: 0, y: 0 };
       robot.status = "arrived";
       return;
     }
 
     const waypoint = robot.path[robot.waypointIndex];
     if (!waypoint) {
+      robot.velocity = { x: 0, y: 0 };
       robot.status = "waiting";
       return;
     }
 
     const waypointDistance = distance(robot.position, waypoint);
     if (waypointDistance <= Math.max(5, robot.maxSpeed * dt * 1.5)) {
+      robot.velocity = { x: 0, y: 0 };
       robot.waypointIndex += 1;
       return;
     }
@@ -194,11 +217,19 @@ export class SimulationEngine {
     );
 
     if (hitsObstacle || hitsRobot) {
+      robot.velocity = { x: 0, y: 0 };
       robot.status = "waiting";
       this.safetyHolds += 1;
       return;
     }
 
+    robot.velocity =
+      dt > 0
+        ? {
+            x: (candidate.x - robot.position.x) / dt,
+            y: (candidate.y - robot.position.y) / dt,
+          }
+        : { x: 0, y: 0 };
     robot.position = candidate;
     robot.heading = heading;
     robot.status = "moving";
