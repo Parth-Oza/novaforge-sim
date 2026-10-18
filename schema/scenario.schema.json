@@ -28,6 +28,7 @@
     "height": { "type": "number", "exclusiveMinimum": 100 },
     "gridSize": { "type": "number", "exclusiveMinimum": 2 },
     "durationSeconds": { "type": "number", "exclusiveMinimum": 0 },
+    "planner": { "enum": ["astar", "direct-line"] },
     "lidar": {
       "type": "object",
       "additionalProperties": false,

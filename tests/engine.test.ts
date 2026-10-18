@@ -20,4 +20,21 @@ describe("simulation engine", () => {
     expect(snapshot.metrics.simTime).toBeCloseTo(0.1);
     expect(snapshot.metrics.sensorFrames).toBeGreaterThan(0);
   });
+
+  it("keeps explicit A* selection equivalent to the default", () => {
+    const explicit = new SimulationEngine({ ...scenarios[0], planner: "astar" });
+    const implicitScenario = structuredClone(scenarios[0]);
+    delete implicitScenario.planner;
+    const implicit = new SimulationEngine(implicitScenario);
+
+    for (let index = 0; index < 120; index += 1) {
+      explicit.step();
+      implicit.step();
+    }
+
+    const explicitSnapshot = explicit.snapshot();
+    const implicitSnapshot = implicit.snapshot();
+    expect(explicitSnapshot.robots).toEqual(implicitSnapshot.robots);
+    expect(explicitSnapshot.metrics).toEqual(implicitSnapshot.metrics);
+  });
 });

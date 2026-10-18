@@ -24,6 +24,7 @@ This first release is an intentionally focused MVP. It does **not** claim to rep
 - Deterministic 60 Hz fixed-step simulation with seeded sensor noise
 - Multi-robot waypoint following and live mission state
 - Grid-based A* planning with path simplification
+- Data-oriented planner plugin interface with A* as the default
 - Moving obstacles and automatic 2 Hz replanning
 - 2D LiDAR ray casting with configurable noise and range
 - Optional 2D radar with seeded range, bearing, and relative-velocity noise
@@ -84,7 +85,7 @@ Scenario JSON
      ▼
 Deterministic simulation engine ─────► Headless batch runner / CI
      │
-     ├── A* planner + path simplifier
+     ├── planner interface + A* / direct-line plugins
      ├── seeded LiDAR and radar sensor models
      ├── robot kinematics and safety holds
      └── dynamic obstacle state
@@ -112,6 +113,7 @@ Start from [`scenarios/aurora-warehouse.json`](scenarios/aurora-warehouse.json).
   "height": 600,
   "gridSize": 24,
   "durationSeconds": 30,
+  "planner": "astar",
   "lidar": { "rays": 72, "maxRange": 180, "noiseStdDev": 0.5 },
   "radar": {
     "maxRange": 260,
@@ -132,6 +134,8 @@ Start from [`scenarios/aurora-warehouse.json`](scenarios/aurora-warehouse.json).
 ```
 
 `radar` is optional. When enabled, each robot snapshot receives detections for dynamic obstacles inside the configured range and field of view. A detection contains the obstacle ID, range in world units, robot-relative bearing in radians, and x/y relative velocity in world coordinates. All radar noise is drawn from the scenario's seeded generator, so fixed-seed replay remains exact.
+
+`planner` is optional and defaults to `astar`. The included `direct-line` plugin is a minimal contributor example: it returns a two-point path only when the complete segment is collision-free. Planner requests and results contain plain arrays, numbers, strings, and objects, so they can cross a Web Worker boundary with `structuredClone`.
 
 The current UI scenarios are defined in `src/sim/scenarios.ts`. Loading arbitrary JSON from the interface is a planned contributor task.
 

@@ -1,7 +1,7 @@
 import { castLidar } from "./lidar";
 import { evaluateScenario } from "./evaluation";
 import { circleIntersectsObstacle, distance, SeededRandom } from "./math";
-import { planPath } from "./planner";
+import { planWithPlanner } from "./planner";
 import { scanRadar } from "./radar";
 import type {
   Obstacle,
@@ -106,6 +106,7 @@ export class SimulationEngine {
         height: this.scenario.height,
         seed: this.scenario.seed,
         durationSeconds: this.scenario.durationSeconds,
+        planner: this.scenario.planner,
         acceptance: structuredClone(this.scenario.acceptance),
         radar: structuredClone(this.scenario.radar),
       },
@@ -131,15 +132,16 @@ export class SimulationEngine {
           height: other.radius * 2,
           kind: "dynamic",
         }));
-      const path = planPath(
-        robot.position,
-        robot.goal,
-        this.scenario.width,
-        this.scenario.height,
-        this.scenario.gridSize,
-        [...this.obstacles, ...otherRobots],
-        robot.radius + 4,
-      );
+      const result = planWithPlanner(this.scenario.planner ?? "astar", {
+        start: robot.position,
+        goal: robot.goal,
+        width: this.scenario.width,
+        height: this.scenario.height,
+        gridSize: this.scenario.gridSize,
+        obstacles: [...this.obstacles, ...otherRobots],
+        padding: robot.radius + 4,
+      });
+      const path = result.path;
       robot.path = path;
       robot.waypointIndex = path.length > 1 ? 1 : 0;
       robot.status = path.length > 1 ? "moving" : "waiting";

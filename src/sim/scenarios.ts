@@ -10,6 +10,7 @@ export const scenarios: Scenario[] = [
     height: 600,
     gridSize: 24,
     durationSeconds: 45,
+    planner: "astar",
     lidar: { rays: 72, maxRange: 170, noiseStdDev: 0.7 },
     radar: {
       maxRange: 260,
@@ -85,6 +86,7 @@ export const scenarios: Scenario[] = [
     height: 600,
     gridSize: 24,
     durationSeconds: 50,
+    planner: "astar",
     lidar: { rays: 96, maxRange: 205, noiseStdDev: 1.2 },
     acceptance: {
       minCompletionPercent: 100,

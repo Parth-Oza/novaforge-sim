@@ -47,6 +47,23 @@ export type AcceptanceCriteria = {
   maxReplans?: number;
 };
 
+export type PlannerId = "astar" | "direct-line";
+
+export type PlannerRequest = {
+  start: Vec2;
+  goal: Vec2;
+  width: number;
+  height: number;
+  gridSize: number;
+  obstacles: Obstacle[];
+  padding: number;
+};
+
+export type PlannerResult = {
+  status: "found" | "blocked";
+  path: Vec2[];
+};
+
 export type Scenario = {
   id: string;
   name: string;
@@ -56,6 +73,7 @@ export type Scenario = {
   height: number;
   gridSize: number;
   durationSeconds: number;
+  planner?: PlannerId;
   lidar: LidarConfig;
   radar?: RadarConfig;
   acceptance: AcceptanceCriteria;
@@ -124,6 +142,7 @@ export type SimulationSnapshot = {
     | "height"
     | "seed"
     | "durationSeconds"
+    | "planner"
     | "acceptance"
     | "radar"
   >;
