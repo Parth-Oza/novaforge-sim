@@ -11,6 +11,13 @@ export const scenarios: Scenario[] = [
     gridSize: 24,
     durationSeconds: 45,
     lidar: { rays: 72, maxRange: 170, noiseStdDev: 0.7 },
+    radar: {
+      maxRange: 260,
+      fieldOfViewDegrees: 120,
+      rangeNoiseStdDev: 0.8,
+      bearingNoiseStdDev: 0.006,
+      velocityNoiseStdDev: 0.12,
+    },
     acceptance: {
       minCompletionPercent: 100,
       minArrivalPercent: 100,

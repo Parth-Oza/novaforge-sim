@@ -8,6 +8,7 @@ const robot: RobotState = {
   start: { x: 50, y: 50 },
   goal: { x: 90, y: 50 },
   position: { x: 50, y: 50 },
+  velocity: { x: 0, y: 0 },
   heading: 0,
   radius: 5,
   maxSpeed: 10,

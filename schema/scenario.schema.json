@@ -38,6 +38,28 @@
         "noiseStdDev": { "type": "number", "minimum": 0 }
       }
     },
+    "radar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxRange",
+        "fieldOfViewDegrees",
+        "rangeNoiseStdDev",
+        "bearingNoiseStdDev",
+        "velocityNoiseStdDev"
+      ],
+      "properties": {
+        "maxRange": { "type": "number", "exclusiveMinimum": 0 },
+        "fieldOfViewDegrees": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 360
+        },
+        "rangeNoiseStdDev": { "type": "number", "minimum": 0 },
+        "bearingNoiseStdDev": { "type": "number", "minimum": 0 },
+        "velocityNoiseStdDev": { "type": "number", "minimum": 0 }
+      }
+    },
     "acceptance": {
       "type": "object",
       "additionalProperties": false,

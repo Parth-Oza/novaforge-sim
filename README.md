@@ -26,6 +26,7 @@ This first release is an intentionally focused MVP. It does **not** claim to rep
 - Grid-based A* planning with path simplification
 - Moving obstacles and automatic 2 Hz replanning
 - 2D LiDAR ray casting with configurable noise and range
+- Optional 2D radar with seeded range, bearing, and relative-velocity noise
 - Two interactive digital-twin scenarios
 - Headless batch execution for CI and regression metrics
 - Declarative acceptance gates with explainable pass/fail evidence
@@ -84,7 +85,7 @@ Scenario JSON
 Deterministic simulation engine ─────► Headless batch runner / CI
      │
      ├── A* planner + path simplifier
-     ├── seeded LiDAR sensor model
+     ├── seeded LiDAR and radar sensor models
      ├── robot kinematics and safety holds
      └── dynamic obstacle state
      │
@@ -112,6 +113,13 @@ Start from [`scenarios/aurora-warehouse.json`](scenarios/aurora-warehouse.json).
   "gridSize": 24,
   "durationSeconds": 30,
   "lidar": { "rays": 72, "maxRange": 180, "noiseStdDev": 0.5 },
+  "radar": {
+    "maxRange": 260,
+    "fieldOfViewDegrees": 120,
+    "rangeNoiseStdDev": 0.8,
+    "bearingNoiseStdDev": 0.006,
+    "velocityNoiseStdDev": 0.12
+  },
   "acceptance": {
     "minCompletionPercent": 95,
     "minArrivalPercent": 100,
@@ -122,6 +130,8 @@ Start from [`scenarios/aurora-warehouse.json`](scenarios/aurora-warehouse.json).
   "obstacles": []
 }
 ```
+
+`radar` is optional. When enabled, each robot snapshot receives detections for dynamic obstacles inside the configured range and field of view. A detection contains the obstacle ID, range in world units, robot-relative bearing in radians, and x/y relative velocity in world coordinates. All radar noise is drawn from the scenario's seeded generator, so fixed-seed replay remains exact.
 
 The current UI scenarios are defined in `src/sim/scenarios.ts`. Loading arbitrary JSON from the interface is a planned contributor task.
 
