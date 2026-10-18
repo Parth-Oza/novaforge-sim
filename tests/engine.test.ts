@@ -37,4 +37,19 @@ describe("simulation engine", () => {
     expect(explicitSnapshot.robots).toEqual(implicitSnapshot.robots);
     expect(explicitSnapshot.metrics).toEqual(implicitSnapshot.metrics);
   });
+
+  it("records deterministic wait transitions and clears them on reset", () => {
+    const first = new SimulationEngine(scenarios[0]);
+    const second = new SimulationEngine(scenarios[0]);
+    for (let index = 0; index < 2_700; index += 1) {
+      first.step();
+      second.step();
+    }
+
+    expect(first.snapshot().waitSamples.length).toBeGreaterThan(0);
+    expect(first.snapshot().waitSamples).toEqual(second.snapshot().waitSamples);
+
+    first.reset();
+    expect(first.snapshot().waitSamples).toEqual([]);
+  });
 });

@@ -107,6 +107,13 @@ export type RadarDetection = {
   relativeVelocity: Vec2;
 };
 
+export type WaitSample = {
+  robotId: string;
+  position: Vec2;
+  simTime: number;
+  reason: "no-path" | "safety-hold";
+};
+
 export type SimulationMetrics = {
   simTime: number;
   safetyHolds: number;
@@ -150,6 +157,7 @@ export type SimulationSnapshot = {
   obstacles: Obstacle[];
   lidar: Record<string, LidarHit[]>;
   radar: Record<string, RadarDetection[]>;
+  waitSamples: WaitSample[];
   metrics: SimulationMetrics;
   evaluation: ScenarioEvaluation;
 };

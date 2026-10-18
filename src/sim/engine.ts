@@ -10,6 +10,7 @@ import type {
   SimulationMetrics,
   SimulationSnapshot,
   Vec2,
+  WaitSample,
 } from "./types";
 
 const cloneScenario = (scenario: Scenario): Scenario => structuredClone(scenario);
@@ -39,13 +40,14 @@ export class SimulationEngine {
   private replanAccumulator = 0;
   private lidar: SimulationSnapshot["lidar"] = {};
   private radar: SimulationSnapshot["radar"] = {};
+  private waitSamples: WaitSample[] = [];
 
   constructor(scenario: Scenario) {
     this.scenario = cloneScenario(scenario);
     this.robots = this.scenario.robots.map(createRobotState);
     this.obstacles = structuredClone(this.scenario.obstacles);
     this.random = new SeededRandom(this.scenario.seed);
-    this.replanAll();
+    this.replanAll(false);
     this.scanAll();
   }
 
@@ -60,7 +62,8 @@ export class SimulationEngine {
     this.replanAccumulator = 0;
     this.lidar = {};
     this.radar = {};
-    this.replanAll();
+    this.waitSamples = [];
+    this.replanAll(false);
     this.scanAll();
   }
 
@@ -116,10 +119,27 @@ export class SimulationEngine {
       radar: structuredClone(this.radar),
       metrics,
       evaluation: evaluateScenario(metrics, this.scenario.acceptance),
+      waitSamples: structuredClone(this.waitSamples),
     };
   }
 
-  private replanAll(): void {
+  private setRobotStatus(
+    robot: RobotState,
+    status: RobotState["status"],
+    reason?: WaitSample["reason"],
+  ): void {
+    if (status === "waiting" && robot.status !== "waiting" && reason) {
+      this.waitSamples.push({
+        robotId: robot.id,
+        position: { ...robot.position },
+        simTime: this.simTime,
+        reason,
+      });
+    }
+    robot.status = status;
+  }
+
+  private replanAll(recordWaitTransitions = true): void {
     for (const robot of this.robots) {
       if (robot.status === "arrived") continue;
       const otherRobots: Obstacle[] = this.robots
@@ -144,7 +164,8 @@ export class SimulationEngine {
       const path = result.path;
       robot.path = path;
       robot.waypointIndex = path.length > 1 ? 1 : 0;
-      robot.status = path.length > 1 ? "moving" : "waiting";
+      if (!recordWaitTransitions && path.length <= 1) robot.status = "planning";
+      else this.setRobotStatus(robot, path.length > 1 ? "moving" : "waiting", "no-path");
       robot.replans += 1;
     }
   }
@@ -182,14 +203,14 @@ export class SimulationEngine {
     if (distance(robot.position, robot.goal) <= robot.radius + 5) {
       robot.position = { ...robot.goal };
       robot.velocity = { x: 0, y: 0 };
-      robot.status = "arrived";
+      this.setRobotStatus(robot, "arrived");
       return;
     }
 
     const waypoint = robot.path[robot.waypointIndex];
     if (!waypoint) {
       robot.velocity = { x: 0, y: 0 };
-      robot.status = "waiting";
+      this.setRobotStatus(robot, "waiting", "no-path");
       return;
     }
 
@@ -220,7 +241,7 @@ export class SimulationEngine {
 
     if (hitsObstacle || hitsRobot) {
       robot.velocity = { x: 0, y: 0 };
-      robot.status = "waiting";
+      this.setRobotStatus(robot, "waiting", "safety-hold");
       this.safetyHolds += 1;
       return;
     }
@@ -234,7 +255,7 @@ export class SimulationEngine {
         : { x: 0, y: 0 };
     robot.position = candidate;
     robot.heading = heading;
-    robot.status = "moving";
+    this.setRobotStatus(robot, "moving");
     robot.distanceTravelled += stepDistance;
   }
 

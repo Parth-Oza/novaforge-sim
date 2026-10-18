@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title description">
+  <title id="title">NovaForge Sim wait-time heatmap replay</title>
+  <desc id="description">A fixed-seed synthetic warehouse replay with four accumulated safety-hold samples rendered as a heatmap.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07141b"/>
+      <stop offset="1" stop-color="#081019"/>
+    </linearGradient>
+    <radialGradient id="heat">
+      <stop offset="0" stop-color="#ff5c7d" stop-opacity=".78"/>
+      <stop offset=".42" stop-color="#ff9f43" stop-opacity=".48"/>
+      <stop offset="1" stop-color="#ff9f43" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#72f1ff" stroke-opacity=".055"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="720" fill="#050b0f"/>
+  <rect x="24" y="24" width="1152" height="672" rx="18" fill="#0a181f" stroke="#91c9d1" stroke-opacity=".22"/>
+
+  <g font-family="Inter,system-ui,sans-serif">
+    <text x="54" y="65" fill="#e6f4f5" font-size="19" font-weight="700">NovaForge Sim</text>
+    <text x="54" y="86" fill="#7f9da2" font-size="10" letter-spacing="2">FIXED-SEED SYNTHETIC REPLAY</text>
+    <circle cx="1004" cy="63" r="4" fill="#9dff8a"/>
+    <text x="1016" y="67" fill="#9dff8a" font-size="11" letter-spacing="1">DETERMINISTIC</text>
+  </g>
+
+  <g transform="translate(54 112)">
+    <rect width="846" height="520" rx="12" fill="url(#background)" stroke="#72f1ff" stroke-opacity=".30"/>
+    <rect x="1" y="1" width="844" height="518" rx="11" fill="url(#grid)"/>
+
+    <g fill="#27404a" stroke="#7ea4ae" stroke-opacity=".55">
+      <rect x="88" y="72" width="164" height="58" rx="7"/>
+      <rect x="88" y="186" width="164" height="58" rx="7"/>
+      <rect x="88" y="300" width="164" height="58" rx="7"/>
+      <rect x="360" y="72" width="164" height="58" rx="7"/>
+      <rect x="360" y="186" width="164" height="58" rx="7"/>
+      <rect x="594" y="300" width="164" height="58" rx="7"/>
+    </g>
+
+    <circle cx="405" cy="423" r="78" fill="url(#heat)"/>
+    <circle cx="438" cy="402" r="54" fill="url(#heat)"/>
+    <circle cx="405" cy="423" r="5" fill="#ff5c7d"/>
+    <circle cx="428" cy="410" r="4" fill="#ff9f43"/>
+
+    <g fill="none" stroke-width="2" stroke-dasharray="6 9" opacity=".75">
+      <path d="M303 435 C350 415 409 404 480 420 S620 420 706 405" stroke="#72f1ff"/>
+      <path d="M285 160 C360 150 420 132 502 142 S641 184 736 166" stroke="#b782ff"/>
+      <path d="M292 278 C365 288 470 300 553 278 S680 246 748 260" stroke="#9dff8a"/>
+    </g>
+
+    <g filter="url(#glow)" stroke-width="3">
+      <circle cx="303" cy="435" r="14" fill="#07141b" stroke="#72f1ff"/>
+      <path d="M316 435 l-10 -6 v12 z" fill="#72f1ff"/>
+      <circle cx="285" cy="160" r="14" fill="#07141b" stroke="#b782ff"/>
+      <path d="M298 160 l-10 -6 v12 z" fill="#b782ff"/>
+      <circle cx="292" cy="278" r="14" fill="#07141b" stroke="#9dff8a"/>
+      <path d="M305 278 l-10 -6 v12 z" fill="#9dff8a"/>
+    </g>
+
+    <g font-family="Inter,system-ui,sans-serif" font-size="10" font-weight="600" text-anchor="middle" fill="#dcecee">
+      <text x="303" y="410">R-01</text>
+      <text x="285" y="135">R-02</text>
+      <text x="292" y="253">R-03</text>
+    </g>
+
+    <rect x="14" y="478" width="818" height="28" rx="7" fill="#071016" fill-opacity=".88"/>
+    <g font-family="ui-monospace,monospace" font-size="10" fill="#7f9da2">
+      <text x="28" y="496">SIM 40.7s</text>
+      <text x="132" y="496" fill="#9dff8a">COMPLETION 100%</text>
+      <text x="285" y="496">SAFETY HOLDS 92</text>
+      <text x="427" y="496" fill="#ff9f43">WAIT SAMPLES 4</text>
+    </g>
+  </g>
+
+  <g transform="translate(924 112)" font-family="Inter,system-ui,sans-serif">
+    <rect width="222" height="520" rx="12" fill="#0d1d25" stroke="#91c9d1" stroke-opacity=".20"/>
+    <text x="22" y="36" fill="#7ba4aa" font-size="10" letter-spacing="2">MISSION LAB</text>
+    <text x="22" y="67" fill="#e6f4f5" font-size="18" font-weight="600">Aurora Warehouse</text>
+    <line x1="22" y1="88" x2="200" y2="88" stroke="#91c9d1" stroke-opacity=".16"/>
+
+    <rect x="22" y="116" width="16" height="16" rx="3" fill="#72f1ff"/>
+    <path d="M26 124 l4 4 7 -9" fill="none" stroke="#07141b" stroke-width="2"/>
+    <text x="49" y="129" fill="#dcecee" font-size="13">Wait heatmap</text>
+    <text x="49" y="149" fill="#7f9da2" font-size="10">Accumulate safety-hold</text>
+    <text x="49" y="163" fill="#7f9da2" font-size="10">locations</text>
+
+    <rect x="22" y="195" width="178" height="1" fill="#91c9d1" fill-opacity=".16"/>
+    <text x="22" y="226" fill="#7ba4aa" font-size="10" letter-spacing="1.5">LIVE EVIDENCE</text>
+    <text x="22" y="260" fill="#7f9da2" font-size="11">Arrived</text>
+    <text x="179" y="260" fill="#9dff8a" font-size="12" text-anchor="end">3 / 3</text>
+    <text x="22" y="290" fill="#7f9da2" font-size="11">Replans</text>
+    <text x="179" y="290" fill="#dcecee" font-size="12" text-anchor="end">112</text>
+    <text x="22" y="320" fill="#7f9da2" font-size="11">Wait transitions</text>
+    <text x="179" y="320" fill="#ff9f43" font-size="12" text-anchor="end">4</text>
+
+    <rect x="22" y="365" width="178" height="42" rx="8" fill="#72f1ff" fill-opacity=".10" stroke="#72f1ff" stroke-opacity=".34"/>
+    <text x="111" y="390" text-anchor="middle" fill="#72f1ff" font-size="11" font-weight="600">RESET CLEARS SAMPLES</text>
+
+    <text x="22" y="463" fill="#7f9da2" font-size="10">Density is recorded only</text>
+    <text x="22" y="479" fill="#7f9da2" font-size="10">on state transitions, not</text>
+    <text x="22" y="495" fill="#7f9da2" font-size="10">on every rendered frame.</text>
+  </g>
+</svg>
