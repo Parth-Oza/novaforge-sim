@@ -8,6 +8,7 @@
   "height": 600,
   "gridSize": 24,
   "durationSeconds": 45,
+  "planner": "astar",
   "lidar": {
     "rays": 72,
     "maxRange": 170,

@@ -16,7 +16,31 @@ NovaForge separates deterministic world evolution from presentation. A scenario 
 
 ### Planner
 
-`src/sim/planner.ts` contains grid-based A* with eight-connected motion, diagonal corner protection, obstacle inflation, and line-of-sight path simplification.
+`src/sim/planner.ts` defines the global-planner seam and two plugins:
+
+- `astar`: the default grid-based A* behavior with eight-connected motion, diagonal corner protection, obstacle inflation, and line-of-sight path simplification;
+- `direct-line`: a deliberately small example that succeeds only when the complete start-to-goal segment is clear.
+
+The engine selects a plugin from `scenario.planner` and knows nothing about its algorithm. Missing configuration resolves to `astar`, preserving existing scenarios. A plugin receives a `PlannerRequest` and returns a `PlannerResult`:
+
+```ts
+type PlannerRequest = {
+  start: Vec2;
+  goal: Vec2;
+  width: number;
+  height: number;
+  gridSize: number;
+  obstacles: Obstacle[];
+  padding: number;
+};
+
+type PlannerResult = {
+  status: "found" | "blocked";
+  path: Vec2[];
+};
+```
+
+These contracts are data-only and structured-clone safe. A contributor adds an implementation to `plannerPlugins`, extends `PlannerId` and the JSON Schema enum, and writes deterministic tests without changing the engine. `planPath` remains as a compatibility wrapper around the default A* plugin.
 
 ### Sensor models
 
@@ -66,10 +90,10 @@ New modules must follow these rules:
 
 ## Extension seams
 
-Planned interfaces will allow contributors to register:
+Interfaces allow contributors to register or extend:
 
 - Sensor models
-- Global and local planners
+- Global planners (implemented) and local planners (planned)
 - Robot controllers
 - Metrics and acceptance rules
 - Scenario generators

@@ -1,5 +1,11 @@
 import { distance, pointInExpandedObstacle } from "./math";
-import type { Obstacle, Vec2 } from "./types";
+import type {
+  Obstacle,
+  PlannerId,
+  PlannerRequest,
+  PlannerResult,
+  Vec2,
+} from "./types";
 
 type GridPoint = { x: number; y: number };
 
@@ -36,7 +42,7 @@ const toWorld = (point: GridPoint, gridSize: number): Vec2 => ({
   y: point.y * gridSize + gridSize / 2,
 });
 
-const lineIsClear = (
+export const lineIsClear = (
   start: Vec2,
   end: Vec2,
   obstacles: Obstacle[],
@@ -78,15 +84,20 @@ const simplifyPath = (
   return simplified;
 };
 
-export const planPath = (
-  start: Vec2,
-  goal: Vec2,
-  width: number,
-  height: number,
-  gridSize: number,
-  obstacles: Obstacle[],
-  padding: number,
-): Vec2[] => {
+type PlannerPlugin = {
+  id: PlannerId;
+  plan: (request: PlannerRequest) => PlannerResult;
+};
+
+const planAStar = ({
+  start,
+  goal,
+  width,
+  height,
+  gridSize,
+  obstacles,
+  padding,
+}: PlannerRequest): PlannerResult => {
   const columns = Math.ceil(width / gridSize);
   const rows = Math.ceil(height / gridSize);
   const startGrid = toGrid(start, gridSize);
@@ -125,12 +136,15 @@ export const planPath = (
       while (cursor !== startKey) {
         const point = points.get(cursor);
         const parent = parents.get(cursor);
-        if (!point || !parent) return [];
+        if (!point || !parent) return { status: "blocked", path: [] };
         reversed.push(toWorld(point, gridSize));
         cursor = parent;
       }
       reversed.push(start);
-      return simplifyPath(reversed.reverse(), obstacles, padding);
+      return {
+        status: "found",
+        path: simplifyPath(reversed.reverse(), obstacles, padding),
+      };
     }
 
     closed.add(current.key);
@@ -162,5 +176,57 @@ export const planPath = (
     }
   }
 
-  return [];
+  return { status: "blocked", path: [] };
 };
+
+const planDirectLine = ({
+  start,
+  goal,
+  width,
+  height,
+  obstacles,
+  padding,
+}: PlannerRequest): PlannerResult => {
+  const insideWorld = (point: Vec2) =>
+    point.x >= padding &&
+    point.y >= padding &&
+    point.x <= width - padding &&
+    point.y <= height - padding;
+  if (
+    !insideWorld(start) ||
+    !insideWorld(goal) ||
+    !lineIsClear(start, goal, obstacles, padding)
+  ) {
+    return { status: "blocked", path: [] };
+  }
+  return { status: "found", path: [start, goal] };
+};
+
+export const plannerPlugins: Readonly<Record<PlannerId, PlannerPlugin>> = {
+  astar: { id: "astar", plan: planAStar },
+  "direct-line": { id: "direct-line", plan: planDirectLine },
+};
+
+export const planWithPlanner = (
+  plannerId: PlannerId,
+  request: PlannerRequest,
+): PlannerResult => plannerPlugins[plannerId].plan(request);
+
+export const planPath = (
+  start: Vec2,
+  goal: Vec2,
+  width: number,
+  height: number,
+  gridSize: number,
+  obstacles: Obstacle[],
+  padding: number,
+): Vec2[] =>
+  planWithPlanner("astar", {
+    start,
+    goal,
+    width,
+    height,
+    gridSize,
+    obstacles,
+    padding,
+  }).path;
