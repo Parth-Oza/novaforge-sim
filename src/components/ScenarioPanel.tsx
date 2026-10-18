@@ -11,6 +11,8 @@ type ScenarioPanelProps = {
   onReset: () => void;
   onShowLidarChange: (value: boolean) => void;
   onShowPathsChange: (value: boolean) => void;
+  importStatus?: { tone: "success" | "error"; message: string };
+  onImportScenario: (file: File) => Promise<void>;
 };
 
 export function ScenarioPanel({
@@ -24,6 +26,8 @@ export function ScenarioPanel({
   onReset,
   onShowLidarChange,
   onShowPathsChange,
+  importStatus,
+  onImportScenario,
 }: ScenarioPanelProps) {
   const scenario = scenarios.find((item) => item.id === scenarioId) ?? scenarios[0];
   return (
@@ -47,6 +51,31 @@ export function ScenarioPanel({
         ))}
       </select>
       <p className="scenario-description">{scenario.description}</p>
+
+      <div className="scenario-import">
+        <label className="file-button">
+          <span>Import scenario JSON</span>
+          <input
+            type="file"
+            accept="application/json,.json"
+            onChange={(event) => {
+              const file = event.currentTarget.files?.[0];
+              event.currentTarget.value = "";
+              if (file) void onImportScenario(file);
+            }}
+          />
+        </label>
+        {importStatus ? (
+          <p
+            className={`import-status ${importStatus.tone}`}
+            role={importStatus.tone === "error" ? "alert" : "status"}
+          >
+            {importStatus.message}
+          </p>
+        ) : (
+          <p className="import-hint">Validated locally against the project schema.</p>
+        )}
+      </div>
 
       <div className="control-row">
         <button className="primary-button" type="button" onClick={onToggleRunning}>

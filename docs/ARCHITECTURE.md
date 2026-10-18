@@ -10,6 +10,8 @@ NovaForge separates deterministic world evolution from presentation. A scenario 
 
 `src/sim/types.ts` defines the public data contract for robots, obstacles, sensors, and snapshots. `schema/scenario.schema.json` provides the matching authoring contract for JSON scenarios.
 
+`src/sim/scenarioImport.ts` compiles that schema with Ajv's JSON Schema 2020-12 validator. Imported text is parsed, validated with all-errors reporting, cloned into the typed scenario contract, and only then admitted to React state. The browser UI rejects duplicate IDs, retains imports only for the current page session, and does not modify the built-in scenario array. Parsing and validation are independent of React so malformed JSON, missing required fields, and unknown properties have fast unit tests.
+
 ### Simulation engine
 
 `src/sim/engine.ts` owns simulation time, dynamic obstacle motion, robot kinematics, replanning, sensor updates, and metrics. It publishes structured-clone-safe snapshots and does not render.

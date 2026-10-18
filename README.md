@@ -32,6 +32,7 @@ This first release is an intentionally focused MVP. It does **not** claim to rep
 - Headless batch execution for CI and regression metrics
 - Declarative acceptance gates with explainable pass/fail evidence
 - JSON Schema for community-authored scenarios
+- In-browser scenario JSON import with path-specific validation errors
 - Responsive, accessible browser interface with no backend
 - Unit tests for planning, sensing, and deterministic replay
 
@@ -137,7 +138,9 @@ Start from [`scenarios/aurora-warehouse.json`](scenarios/aurora-warehouse.json).
 
 `planner` is optional and defaults to `astar`. The included `direct-line` plugin is a minimal contributor example: it returns a two-point path only when the complete segment is collision-free. Planner requests and results contain plain arrays, numbers, strings, and objects, so they can cross a Web Worker boundary with `structuredClone`.
 
-The current UI scenarios are defined in `src/sim/scenarios.ts`. Loading arbitrary JSON from the interface is a planned contributor task.
+The built-in UI scenarios are defined in `src/sim/scenarios.ts`. To load your own, choose **Import scenario JSON** in the Mission Lab. Validation happens locally against the same repository schema; a valid scenario is added to the world selector and launched without a page refresh. Imported scenarios remain in memory for the current page session and never leave the browser.
+
+Invalid files show up to three path-specific errors, for example `/robots: must have required property 'robots'`. Scenario IDs must be unique across built-in and imported scenarios so selection remains unambiguous.
 
 Acceptance gates make the expected behavior reviewable with the scenario itself. The browser
 shows each live check, while `pnpm batch` applies the same evaluator to every deterministic run
@@ -165,7 +168,7 @@ Good starting points are deliberately isolated:
 1. Add a third scenario in `src/sim/scenarios.ts`.
 2. Add a sensor model beside `src/sim/lidar.ts`.
 3. Improve path smoothing in `src/sim/planner.ts`.
-4. Add scenario JSON import with schema validation.
+4. Add a new schema-backed scenario property and its validation tests.
 5. Add collision and near-miss heatmaps to the viewport.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup, project conventions, and the pull-request checklist. Feature proposals can start as a GitHub Discussion or issue.

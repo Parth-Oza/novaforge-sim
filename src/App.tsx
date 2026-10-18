@@ -2,12 +2,25 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ScenarioPanel } from "./components/ScenarioPanel";
 import { SimulatorCanvas } from "./components/SimulatorCanvas";
 import { TelemetryPanel } from "./components/TelemetryPanel";
-import { getScenario, scenarios, SimulationEngine } from "./sim";
-import type { SimulationSnapshot } from "./sim";
+import { parseScenarioJson, scenarios, SimulationEngine } from "./sim";
+import type { Scenario, SimulationSnapshot } from "./sim";
 
 export default function App() {
   const [scenarioId, setScenarioId] = useState(scenarios[0].id);
-  const scenario = useMemo(() => getScenario(scenarioId), [scenarioId]);
+  const [importedScenarios, setImportedScenarios] = useState<Scenario[]>([]);
+  const [importStatus, setImportStatus] = useState<
+    { tone: "success" | "error"; message: string } | undefined
+  >();
+  const availableScenarios = useMemo(
+    () => [...scenarios, ...importedScenarios],
+    [importedScenarios],
+  );
+  const scenario = useMemo(
+    () =>
+      availableScenarios.find((item) => item.id === scenarioId) ??
+      availableScenarios[0],
+    [availableScenarios, scenarioId],
+  );
   const engineRef = useRef(new SimulationEngine(scenario));
   const [snapshot, setSnapshot] = useState<SimulationSnapshot>(engineRef.current.snapshot());
   const [running, setRunning] = useState(true);
@@ -54,6 +67,37 @@ export default function App() {
     setRunning(false);
   };
 
+  const importScenario = async (file: File) => {
+    try {
+      const result = parseScenarioJson(await file.text());
+      if (!result.ok) {
+        setImportStatus({
+          tone: "error",
+          message: result.errors.slice(0, 3).join(" · "),
+        });
+        return;
+      }
+      if (availableScenarios.some((item) => item.id === result.scenario.id)) {
+        setImportStatus({
+          tone: "error",
+          message: `Scenario ID “${result.scenario.id}” is already in use.`,
+        });
+        return;
+      }
+      setImportedScenarios((current) => [...current, result.scenario]);
+      setScenarioId(result.scenario.id);
+      setImportStatus({
+        tone: "success",
+        message: `Loaded “${result.scenario.name}” from ${file.name}.`,
+      });
+    } catch (error) {
+      setImportStatus({
+        tone: "error",
+        message: error instanceof Error ? error.message : "Could not read that file.",
+      });
+    }
+  };
+
   return (
     <main className="app-shell">
       <header className="topbar">
@@ -84,7 +128,7 @@ export default function App() {
 
       <section className="workspace" aria-label="Simulation workspace">
         <ScenarioPanel
-          scenarios={scenarios}
+          scenarios={availableScenarios}
           scenarioId={scenarioId}
           running={running}
           showLidar={showLidar}
@@ -94,6 +138,8 @@ export default function App() {
           onReset={reset}
           onShowLidarChange={setShowLidar}
           onShowPathsChange={setShowPaths}
+          importStatus={importStatus}
+          onImportScenario={importScenario}
         />
 
         <div className="viewport panel">
