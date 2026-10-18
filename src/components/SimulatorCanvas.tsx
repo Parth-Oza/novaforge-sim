@@ -1,10 +1,12 @@
 import { useEffect, useRef } from "react";
+import { buildWaitHeatmap } from "../sim/heatmap";
 import type { SimulationSnapshot } from "../sim";
 
 type SimulatorCanvasProps = {
   snapshot: SimulationSnapshot;
   showLidar: boolean;
   showPaths: boolean;
+  showWaitHeatmap: boolean;
 };
 
 const roundedRect = (
@@ -19,7 +21,12 @@ const roundedRect = (
   context.roundRect(x, y, width, height, radius);
 };
 
-export function SimulatorCanvas({ snapshot, showLidar, showPaths }: SimulatorCanvasProps) {
+export function SimulatorCanvas({
+  snapshot,
+  showLidar,
+  showPaths,
+  showWaitHeatmap,
+}: SimulatorCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -55,6 +62,25 @@ export function SimulatorCanvas({ snapshot, showLidar, showPaths }: SimulatorCan
     context.strokeStyle = "rgba(114, 241, 255, 0.28)";
     context.lineWidth = 2;
     context.strokeRect(1, 1, width - 2, height - 2);
+
+    if (showWaitHeatmap) {
+      for (const cell of buildWaitHeatmap(snapshot.waitSamples)) {
+        const radius = 18 + cell.intensity * 24;
+        const gradient = context.createRadialGradient(
+          cell.x,
+          cell.y,
+          0,
+          cell.x,
+          cell.y,
+          radius,
+        );
+        gradient.addColorStop(0, `rgba(255, 92, 125, ${0.18 + cell.intensity * 0.4})`);
+        gradient.addColorStop(0.48, `rgba(255, 159, 67, ${0.1 + cell.intensity * 0.22})`);
+        gradient.addColorStop(1, "rgba(255, 159, 67, 0)");
+        context.fillStyle = gradient;
+        context.fillRect(cell.x - radius, cell.y - radius, radius * 2, radius * 2);
+      }
+    }
 
     for (const obstacle of snapshot.obstacles) {
       const dynamic = obstacle.kind === "dynamic";
@@ -147,7 +173,7 @@ export function SimulatorCanvas({ snapshot, showLidar, showPaths }: SimulatorCan
       context.textAlign = "center";
       context.fillText(robot.id.toUpperCase(), robot.position.x, robot.position.y - robot.radius - 13);
     }
-  }, [showLidar, showPaths, snapshot]);
+  }, [showLidar, showPaths, showWaitHeatmap, snapshot]);
 
   return (
     <canvas

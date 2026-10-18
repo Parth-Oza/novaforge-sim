@@ -1,4 +1,5 @@
 export { SimulationEngine } from "./engine";
+export { buildWaitHeatmap } from "./heatmap";
 export { evaluateScenario } from "./evaluation";
 export { castLidar } from "./lidar";
 export { plannerPlugins, planPath, planWithPlanner } from "./planner";

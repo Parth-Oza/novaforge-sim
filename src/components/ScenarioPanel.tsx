@@ -6,11 +6,13 @@ type ScenarioPanelProps = {
   running: boolean;
   showLidar: boolean;
   showPaths: boolean;
+  showWaitHeatmap: boolean;
   onScenarioChange: (scenarioId: string) => void;
   onToggleRunning: () => void;
   onReset: () => void;
   onShowLidarChange: (value: boolean) => void;
   onShowPathsChange: (value: boolean) => void;
+  onShowWaitHeatmapChange: (value: boolean) => void;
   importStatus?: { tone: "success" | "error"; message: string };
   onImportScenario: (file: File) => Promise<void>;
 };
@@ -21,11 +23,13 @@ export function ScenarioPanel({
   running,
   showLidar,
   showPaths,
+  showWaitHeatmap,
   onScenarioChange,
   onToggleRunning,
   onReset,
   onShowLidarChange,
   onShowPathsChange,
+  onShowWaitHeatmapChange,
   importStatus,
   onImportScenario,
 }: ScenarioPanelProps) {
@@ -106,6 +110,17 @@ export function ScenarioPanel({
             type="checkbox"
             checked={showPaths}
             onChange={(event) => onShowPathsChange(event.target.checked)}
+          />
+        </label>
+        <label>
+          <span>
+            <strong>Wait heatmap</strong>
+            <small>Accumulate safety-hold locations</small>
+          </span>
+          <input
+            type="checkbox"
+            checked={showWaitHeatmap}
+            onChange={(event) => onShowWaitHeatmapChange(event.target.checked)}
           />
         </label>
       </div>

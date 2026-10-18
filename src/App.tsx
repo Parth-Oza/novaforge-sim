@@ -26,6 +26,7 @@ export default function App() {
   const [running, setRunning] = useState(true);
   const [showLidar, setShowLidar] = useState(true);
   const [showPaths, setShowPaths] = useState(true);
+  const [showWaitHeatmap, setShowWaitHeatmap] = useState(true);
 
   useEffect(() => {
     engineRef.current = new SimulationEngine(scenario);
@@ -133,11 +134,13 @@ export default function App() {
           running={running}
           showLidar={showLidar}
           showPaths={showPaths}
+          showWaitHeatmap={showWaitHeatmap}
           onScenarioChange={setScenarioId}
           onToggleRunning={() => setRunning((value) => !value)}
           onReset={reset}
           onShowLidarChange={setShowLidar}
           onShowPathsChange={setShowPaths}
+          onShowWaitHeatmapChange={setShowWaitHeatmap}
           importStatus={importStatus}
           onImportScenario={importScenario}
         />
@@ -153,11 +156,16 @@ export default function App() {
               <span><i className="legend-dynamic" /> Dynamic object</span>
             </div>
           </div>
-          <SimulatorCanvas snapshot={snapshot} showLidar={showLidar} showPaths={showPaths} />
+          <SimulatorCanvas
+            snapshot={snapshot}
+            showLidar={showLidar}
+            showPaths={showPaths}
+            showWaitHeatmap={showWaitHeatmap}
+          />
           <div className="viewport-footer">
             <span>Fixed step 60 Hz</span>
             <span>Planner refresh 2 Hz</span>
-            <span>Seeded sensor noise</span>
+            <span>Wait samples {snapshot.waitSamples.length}</span>
           </div>
         </div>
 

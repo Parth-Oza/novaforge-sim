@@ -33,6 +33,7 @@ This first release is an intentionally focused MVP. It does **not** claim to rep
 - Declarative acceptance gates with explainable pass/fail evidence
 - JSON Schema for community-authored scenarios
 - In-browser scenario JSON import with path-specific validation errors
+- Toggleable wait/safety-hold density heatmap with resettable samples
 - Responsive, accessible browser interface with no backend
 - Unit tests for planning, sensing, and deterministic replay
 
@@ -89,6 +90,7 @@ Deterministic simulation engine ─────► Headless batch runner / CI
      ├── planner interface + A* / direct-line plugins
      ├── seeded LiDAR and radar sensor models
      ├── robot kinematics and safety holds
+     ├── deterministic wait-transition sampling
      └── dynamic obstacle state
      │
      ▼
@@ -142,6 +144,10 @@ The built-in UI scenarios are defined in `src/sim/scenarios.ts`. To load your ow
 
 Invalid files show up to three path-specific errors, for example `/robots: must have required property 'robots'`. Scenario IDs must be unique across built-in and imported scenarios so selection remains unambiguous.
 
+The **Wait heatmap** control overlays locations where a robot transitions into `waiting`. Repeated frames in the same wait do not inflate density; a later transition may add another sample. Reset clears all samples before the scenario restarts. Heatmap aggregation and rendering consume snapshot copies and never mutate the simulation engine.
+
+![Fixed-seed synthetic replay with the wait heatmap enabled](docs/wait-heatmap-preview.svg)
+
 Acceptance gates make the expected behavior reviewable with the scenario itself. The browser
 shows each live check, while `pnpm batch` applies the same evaluator to every deterministic run
 and reports the exact checks that failed. See the
@@ -169,7 +175,7 @@ Good starting points are deliberately isolated:
 2. Add a sensor model beside `src/sim/lidar.ts`.
 3. Improve path smoothing in `src/sim/planner.ts`.
 4. Add a new schema-backed scenario property and its validation tests.
-5. Add collision and near-miss heatmaps to the viewport.
+5. Extend the wait heatmap with separately classified near-miss samples.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup, project conventions, and the pull-request checklist. Feature proposals can start as a GitHub Discussion or issue.
 

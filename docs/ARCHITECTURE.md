@@ -68,6 +68,12 @@ The radar is intentionally a geometric autonomy-test sensor, not an electromagne
 
 React components consume snapshots. `SimulatorCanvas` renders the digital-twin view, while control and telemetry components remain ordinary accessible HTML.
 
+### Wait heatmap
+
+The engine records a `WaitSample` only when a robot crosses from a non-waiting state into `waiting`. Each sample contains robot ID, a copied position, simulation time, and either a `no-path` or `safety-hold` reason. Reset clears the collection before any new step is executed.
+
+`src/sim/heatmap.ts` is a pure, deterministic projection from immutable samples to normalized grid cells. Stable cell-key ordering makes the same replay produce the same draw sequence. `SimulatorCanvas` renders those cells as radial gradients behind world objects; it has no reference to the engine and cannot mutate simulation state. This separation keeps the overlay optional and preserves headless replay behavior.
+
 ### Batch runner
 
 `src/cli/batch.ts` runs repeated seeded scenarios without a browser. It applies the same
