@@ -278,6 +278,59 @@ select {
   line-height: 1.65;
 }
 
+.scenario-import {
+  display: grid;
+  gap: 7px;
+  margin: -7px 0 20px;
+}
+
+.file-button {
+  display: grid;
+  min-height: 37px;
+  place-items: center;
+  border: 1px dashed rgba(114, 241, 255, 0.34);
+  border-radius: 9px;
+  color: #a9c5c9;
+  background: rgba(8, 24, 30, 0.52);
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+}
+
+.file-button:hover {
+  border-color: rgba(114, 241, 255, 0.7);
+  color: var(--cyan);
+}
+
+.file-button input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.import-hint,
+.import-status {
+  margin: 0;
+  font: 400 8px/1.5 "DM Mono", monospace;
+}
+
+.import-hint {
+  color: #617c82;
+}
+
+.import-status.success {
+  color: var(--green);
+}
+
+.import-status.error {
+  color: #ff829f;
+}
+
 .control-row {
   display: grid;
   grid-template-columns: 1.45fr 0.8fr;
